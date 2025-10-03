@@ -1,0 +1,56 @@
+services:
+  # Main Dagster service
+  dagster:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - DAGSTER_HOME=/opt/dagster/dagster_home
+      - DBT_BIGQUERY_PROJECT=${DBT_BIGQUERY_PROJECT:-your-gcp-project}
+      - DBT_BIGQUERY_DATASET=${DBT_BIGQUERY_DATASET:-your_dataset}
+      - DBT_BIGQUERY_LOCATION=${DBT_BIGQUERY_LOCATION:-US}
+      - DBT_BIGQUERY_KEYFILE_PATH=${DBT_BIGQUERY_KEYFILE_PATH:-/app/credentials/gcp-key.json}
+    volumes:
+      - ./dagster_orchestration:/app/dagster_orchestration
+      - ./dbt_transformation:/app/dbt_transformation
+      - ./credentials:/app/credentials:ro
+      - dagster_storage:/opt/dagster/dagster_home
+    networks:
+      - data-engineering-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: DBT service for standalone DBT operations
+  dbt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/dbt_transformation
+    environment:
+      - DBT_BIGQUERY_PROJECT=${DBT_BIGQUERY_PROJECT:-your-gcp-project}
+      - DBT_BIGQUERY_DATASET=${DBT_BIGQUERY_DATASET:-your_dataset}
+      - DBT_BIGQUERY_LOCATION=${DBT_BIGQUERY_LOCATION:-US}
+      - DBT_BIGQUERY_KEYFILE_PATH=${DBT_BIGQUERY_KEYFILE_PATH:-/app/credentials/gcp-key.json}
+    volumes:
+      - ./dbt_transformation:/app/dbt_transformation
+      - ./credentials:/app/credentials:ro
+    networks:
+      - data-engineering-network
+    command: ["tail", "-f", "/dev/null"]  # Keep container running
+    profiles:
+      - dbt-only  # Only start with --profile dbt-only
+
+volumes:
+  dagster_storage:
+    driver: local
+
+networks:
+  data-engineering-network:
+    driver: bridge

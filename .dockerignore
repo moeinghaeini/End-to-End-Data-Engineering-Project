@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+.tmp_dagster_home_*
+.tmp/
+
+# DBT
+dbt_transformation/target/
+dbt_transformation/dbt_packages/
+dbt_transformation/logs/
+
+# Credentials (should be mounted as volumes)
+credentials/
+*.json
+*.key
+*.pem
+
+# Documentation
+*.md
+LICENSE
+NOTICE
+CONTRIBUTING.md
+
+# Test files
+dagster_orchestration_tests/
+tests/
+*_test.py
+test_*.py
